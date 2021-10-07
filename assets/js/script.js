@@ -190,8 +190,6 @@ var taskStatusChangeHandler = function(event) {
   for (var i = 0; i < tasks.length; i++) {
     if (tasks[i].id === parseInt(taskId)) {
       tasks[i].status = statusValue;
-
-      console.log(tasks);
     }
   }
   saveTasks();
@@ -219,7 +217,62 @@ var deleteTask = function(taskId) {
 
 var saveTasks = function() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
-}
+};
+
+//get tasks from localStorage
+
+//convert tasks from string back into an array
+
+//iterate through a tasks array and create task elements on the page from it
+
+var loadTasks = function() {
+  var savedTasks = localStorage.getItem("tasks");
+  if (!savedTasks) {
+    return false;
+  }
+  console.log("saved tasks found!");
+  
+  savedTasks = JSON.parse(savedTasks);
+
+  for (var i = 0; i < savedTasks.length; i++) {
+    savedTasks[i].id = taskIdCounter;
+    //console.log(savedTasks[i]);
+    var listItemEl = document.createElement("li");
+    listItemEl.className = "task-item";
+  
+    listItemEl.setAttribute("data-task-id", savedTasks[i].id);
+    //console.log(listItemEl);
+
+    var taskInfoEl = document.createElement("div");
+    taskInfoEl.className = "task-info";
+    taskInfoEl.innerHTML = "<h3 class='task-name'>" + savedTasks[i].name + "</h3><span class='task-type'>" + savedTasks[i].type + "</span>";
+    listItemEl.appendChild(taskInfoEl);
+
+    var taskActionsEl = createTaskActions(savedTasks[i].id);
+    listItemEl.appendChild(taskActionsEl);
+    //console.log(listItemEl);
+
+    if (savedTasks[i].status === "to do") {
+      listItemEl.querySelector("select[name='status-change']").selectedIndex = 0;
+      tasksToDoEl.appendChild(listItemEl);
+    }
+    else if (savedTasks[i].status === "in progress") {
+      listItemEl.querySelector("select[name='status-change']").selectedIndex = 1;
+      tasksInProgressEl.appendChild(listItemEl);
+    }
+    else if (savedTasks[i].status === "complete") {
+      listItemEl.querySelector("select[name='status-change']").selectedIndex = 2;
+      tasksCompletedEl.appendChild(listItemEl);
+    }
+    taskIdCounter++;
+  }
+  console.log(listItemEl);
+  
+};
+
+loadTasks();
+
+
 
 formEl.addEventListener("submit", taskFormHandler);
 
